@@ -3,7 +3,8 @@ __pycache__/
 data.db
 data/img/
 .env
-_*.py
-x_main_clean.py
-x_main_header.py
-*.txt
+_x_main_clean.py
+_x_main_header.py
+main_minimal.py
+min_test.py
+main_v2.py

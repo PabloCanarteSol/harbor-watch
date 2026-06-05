@@ -24,9 +24,10 @@ SKIP_TYPES = {
     "Ferry-Car", "Platform Supply", "Ferry"
 }
 
-SHIP_MIN_LENGTH = 60            # meters min
-POST_INTERVAL_SECS = 7200       # Max post every 2 hours per ship
-DOCK_STILL_SECONDS = 300        # Speed 0 for 5 min -> docked
+SHIP_MIN_LENGTH = 60             # meters min
+POST_INTERVAL_SECS = 7200        # Max post every 2 hours per ship
+DOCK_STILL_SECONDS = 300         # Speed 0 for 5 min -> docked
+DETECTION_RANGE_KM = 20          # Realistic SDR AIS range km (HackRF VHF)
 
 MAP_SIZE = (1600, 900)
 IMAGES_DIR = "/home/harbor-watch/templates/"

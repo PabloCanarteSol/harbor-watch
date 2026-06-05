@@ -63,7 +63,7 @@ class AisParser:
 
     @staticmethod
     def parse_raw(raw_json):
-        if not raw_json or "mms" not in raw_json:
+        if not raw_json or "mmsi" not in raw_json:
             return None
 
         speed_val = float(raw_json["speed"]) if raw_json.get("speed") else None
@@ -72,9 +72,9 @@ class AisParser:
         imo_str = str(raw_json.get("imo", ""))
 
         return AisMessage(
-            mmsi=raw_json["mms"],
+            mmsi=raw_json["mmsi"],
             lat=float(raw_json.get("lat", 0)) / 1e7,
-            lon=float(raw_json.get("lon", 0)) / 1e6,
+            lon=float(raw_json.get("lon", 0)) / 1e7,
             speed=speed_val,
             course=course_val,
             name=raw_json.get("name", "Unknown"),
