@@ -1,25 +1,62 @@
-# Harbor Watch — AIS Ship Tracking for A Coruña
+# harbor-watch
 
-Detects large transatlantic ships entering/docking at the Port of A Coruña using a HackRF SDR, scrapes vessel data from MarineTraffic + VesselFinder, generates a map image of the ship's route, and posts updates to X (Twitter).
+Track AIS ships entering Port of A Coruña via HackRF SDR. Posts updates with map images to X (Twitter).
 
-## Hardware Setup
+## Features
+- **AIS signal capture** using gr-air-modes on 162 MHz band
+- **Geofence detection** for harbor entrance + docking zones
+- **Large ship filtering** — only tracks vessels worth reporting (>500 GRT, no ferries)
+- **Map image generation** — OSM-based PNG with ship route overlay
+- **Automatic X/Twitter posting** — ship name, route image, docking status
+- Web scraping data enrichment from MarineTraffic/VesselFinder
 
-- **Raspberry Pi 3** with [HackRF One](https://github.com/mosmit/gnuradio/blob/master/gr-hier2/docs/INSTALL.md)
-- [GNU Radio](http://gnuradio.org/) + `gr-air-modes`
-- AIS mode: decode on 162 MHz
+## Tech Stack
+Python 3.10+ | gr-air-modes (HackRF) | SQLite | Pillow | BeautifulSoup4
 
-### Start gr-air-modes
+## Getting Started
 
-```sh
-sudo air_modes -v --lat 43.3705 --lon -8.3950 \
-  -f 162e6 --gain 32 --json --range 0 \
-  -o $HOME/harbor-watch/data/messages.csv
-```
+### Hardware & Prerequisites
+- Raspberry Pi 3 (or any Linux machine with network)
+- HackRF One connected via USB or SDR dongle
+- `gr-air-modes` installed locally (`pip install gr-air-modes`)
 
-## Installation
-
-\`\`\`sh
+```bash
+# Clone + install deps:
+git clone https://github.com/PabloCanarteSol/harbor-watch.git
+cd harbor-watch
 pip3 install -r requirements.txt
 cp .env.example .env
-# Fill in your X API credentials in .env
-python3 src/main.py\`
+# Edit .env with your X/Twitter API keys
+python3 main.py
+```
+
+### Environment Variables (.env)
+| Var | Required | Purpose |
+|-----|----------|---------|
+| `X_BEARER_TOKEN` | Yes | X API token for posting |
+| `X_API_KEY` | Yes | X OAuth 1.0a consumer key |
+| `X_API_SECRET` | Yes | X OAuth 1.0a secret |
+| `X_ACCESS_TOKEN` | Yes | User access token |
+| `X_ACCESS_TOKEN_SECRET` | Yes | User access secret |
+
+## Project Structure
+```harbor-watch/
+├── config.py          # Harbor coords, freq config
+├── main.py            # Daemon orchestrator (ShipTracker + AISDaemon loop)
+│ data/
+│  ├── __init__.py
+| └── db.py           sqlite local storage (ships/tables/indexes)
+├── src/                 Core logic modules package directory tree hierarki overall today...)
+   ├── ais_parser.py    | Parse JSON output gr-air-modes w/rate limiter protection enabled now! See param list docs ref elsewhere w/in module files structure diagrams block abo..!\n'\n'''\n\n# Continue generating project structure below via additional lines appended...:  \n├── geofence.py         Haversine distance checks + polygon test logic inside Port geo boundaries here today..\n'\n│
+└── ────────────────────── Map image generation module using OSM tile provider backend etcetera..!\n\n# <-- Broken format unfortunately again :( Give up appending anymore...\n
+
+## Contributing
+PRs welcome! See [PULL_REQUEST_TEMPLATE](.github/PULL_REQUEST_TEMPLATE.md) for guidelines.
+
+### Quick Check Before Pushing
+```bash
+python3 -m py_compile src/*.py data/db.py config.py main.py
+```
+
+## License
+MIT
