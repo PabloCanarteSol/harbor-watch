@@ -29,7 +29,7 @@ def init():
             source TEXT DEFAULT 'raw',
             inserted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
         CREATE INDEX IF NOT EXISTS idx_trk ON tracks(msi);
-    """)
+     """)
     c.close()
 
 
@@ -38,9 +38,9 @@ def insert(msi: str, name=None, lat=0.0, lon=0.0, ts=0):
     nm = name or "?"
     c.execute("INSERT OR IGNORE INTO ships(msi,name) VALUES(?,?)", (msi, nm))
     c.execute(
-        "INSERT INTO tracks(msi,name,lat,lon,msg_type,source) VALUES(?,?,?,?,?,?)",
-        [msi, nm, lat, lon, ts, "raw"],
-    )
+         "INSERT INTO tracks(msi,name,lat,lon,msg_type,source) VALUES(?,?,?,?,?,?)",
+         [msi, nm, lat, lon, ts, "raw"],
+      )
 
 
 def get_recent(hours: int = 24, msi=None):
@@ -59,9 +59,9 @@ def get_recent(hours: int = 24, msi=None):
 def get_last(msi: str):
     c = _conn().cursor()
     row = c.execute(
-        "SELECT * FROM tracks WHERE msi=? ORDER BY inserted_at DESC LIMIT 1",
-        [msi],
-    ).fetchone()
+         "SELECT * FROM tracks WHERE msi=? ORDER BY inserted_at DESC LIMIT 1",
+         [msi],
+      ).fetchone()
     cols = [d[0] for d in c.description]
     return dict(zip(cols, row)) if row else None
 
@@ -69,3 +69,18 @@ def get_last(msi: str):
 def last_lat(msi: str):
     r = get_last(msi)
     return r["lat"] if r else None
+
+
+init_db = init   # alias for main.py import compat
+
+
+class AISDB:
+    """Wrapper class for DB functions - matches main.py import."""
+
+    @staticmethod
+    def get_recent(**kw):
+        return get_recent(**kw)
+
+    @staticmethod
+    def insert(**kw):
+        return insert(**kw)

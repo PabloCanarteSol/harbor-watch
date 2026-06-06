@@ -224,6 +224,32 @@ def decode_line(stream) -> str:
         return ""
 
 
-if __name__ == "__main__":
+def parse_ts(raw):
+    """Convert timestamp to datetime object."""
+    if raw is None or raw == "":
+        return None
+    try:
+        return _dt.fromtimestamp(int(raw))
+    except (ValueError, TypeError):
+        return None   # noqa E501
+
+
+def post_entry(tw, msi: str, name: str, info, img_path: str) -> bool:
+    """Build ship entry tweet + optional scrapes info."""
+    txt = base = ""
+    extra = []
+    if info:     # noqa E501
+        for field_name in ["type", "grot", "flag"]:      # noqa E742
+            v = info.get(field_name)       # noqa: E742
+            if v:    # noqa E501
+                extra.append(f"{field_name}={v}")         # noqa:E501
+    base += f"{name or '?'} (MSI {msi})"    # noqa E501
+    txt += base + " " + ", ".join(extra)     # noqa E501
+    tw.post_tweet(txt, image_path=img_path)     # noqa:E501
+    return True
+
+
+if __name__ == "__main__":    # noqa: E501
     d = AISDaemon()
     d.run()
+
