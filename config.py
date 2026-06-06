@@ -33,10 +33,9 @@ DETECTION_RANGE_KM = 20          # Realistic SDR AIS range km (HackRF VHF)
 MAP_SIZE = (1600, 900)
 IMAGES_DIR = "/home/harbor-watch/templates/"
 
-# gr-air-modes config
-RX_FREQ = 161975000           # VHF AIS frequency Hz
-RUNE_PATH = os.path.join(os.environ.get("GR_AIR_MODES", "./gr-air-modes"))
-RUNE_NAME = "air_modes"
+# gr-air-modes config - captures VHF AIS via HackRF/RTL-SDR
+RX_FREQ = 161975000            # VHF AIS frequency Hz  
+AIR_MODES_BIN = os.path.join(os.environ.get("GR_AIR_MODES", "/opt/lib/gr-air-modes/build"), "air_modes")
 
 # Recent ship tracking window
 RECENT_HRS = 24

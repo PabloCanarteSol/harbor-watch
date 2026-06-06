@@ -75,13 +75,14 @@ class ProcMgr:
 
     def __init__(self, rx_f: int):
         self.cmd: list[str] = [
-            os.path.join(config.RUNE_PATH, "air_modes"),
-            "-f", str(rx_f),
-            "-g", "16",
-            "-s", "2",
-            "--ais",
-        ]
+            config.AIR_MODES_BIN,
+              "-f", str(config.RX_FREQ),
+              "-g", "16",
+              "-s", "2M",
+              "--ais",
+           ]
         self.p: subprocess.Popen | None = None
+
 
     def start(self) -> bool:
         if self.p and self.p.poll() is None:
@@ -91,7 +92,7 @@ class ProcMgr:
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
         )
-        logger.info("Started %s pid=%d", config.RUNE_NAME, self.p.pid)
+        logger.info("Started %s pid=%d", "air_modes", self.p.pid)
         return True
 
     def stop(self):
@@ -103,7 +104,7 @@ class ProcMgr:
         except Exception as e:
             logger.warning("Stop error: %s", e)
         finally:
-            logger.info("Stopped %s", config.RUNE_NAME)
+            logger.info("Stopped %s", "air_modes")
 
     def alive(self) -> bool:
         if not self.p:
@@ -120,13 +121,13 @@ class ProcMgr:
 
     @staticmethod
     def chk():
-        cmd = os.path.join(config.RUNE_PATH, "air_modes")
-        if not os.path.isfile(cmd):
-            logger.warning(
-                "%s not found - install gr-air-modes first!",
-                config.RUNE_NAME,
-            )
-            sys.exit(1)
+      cmd = config.AIR_MODES_BIN
+      if not os.path.isfile(cmd):
+          logger.warning(
+              "%s not found - install gr-air-modes first!",
+               "air_modes",
+           )
+          sys.exit(1)
 
 
 def _wait_term(p: subprocess.Popen, t=20):
@@ -160,7 +161,7 @@ class AISDaemon:
     def run(self):
         ProcMgr.chk()
         self.prc.start()
-        logger.info("Monitoring %s [PID %d]", config.RUNE_NAME, self.prc.p.pid)
+        logger.info("Monitoring %s [PID %d]", "air_modes", self.prc.p.pid)
         buf = ""
         while True:
             line = decode_line(self.prc.p.stdout)

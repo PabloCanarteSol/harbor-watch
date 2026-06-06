@@ -1,43 +1,41 @@
-name: CI
-
-on:
-  push:
-    branches: [master]
-  pull_request:
-    branches: [master]
-
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-      - name: Install deps
-        run: pip install --upgrade pip && pip install -r requirements.txt
-      - name: Lint + compile check
-        run: |
-          set -e
-          for f in config.py main.py src/*.py data/db.py; do
-            python3 -m py_compile "$f" || exit 1
-          done
-          echo "All files compile OK"
-
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    - name: Install deps
+      run: pip install --upgrade pip && pip install -r requirements.txt
+    - name: Lint + compile check
+      run: "set -e\nfor f in config.py main.py src/*.py data/db.py; do\n  python3\
+        \ -m py_compile \\\"\\\" || exit 1\ndone\necho All files compile OK"
   test:
-    runs-on: ubuntu-latest
     needs: lint
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-      - name: Install deps + test deps
-        run: pip install --upgrade pip && pip install -r requirements.txt -r requirements-test.txt
-      - name: Run tests
-        run: |
-          set -e
-          echo "Running pytest..."
-          python3 -m pytest tests/ -v
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    - name: Install deps + test deps
+      run: pip install --upgrade pip && pip install -r requirements.txt -r requirements-test.txt
+    - name: Run tests + coverage
+      run: 'set -e
+
+        python3 -m pytest tests/ -v --cov=src --cov=data/db.py --cov-report=term-missing
+        > .coverage.txt'
+    - if: always()
+      name: Show coverage
+      run: cat .coverage.txt
+name: CI
+'on':
+  pull_request:
+    branches:
+    - master
+  push:
+    branches:
+    - master
