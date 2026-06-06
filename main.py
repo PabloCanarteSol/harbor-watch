@@ -198,7 +198,7 @@ class AISDaemon:
         if msg_ty != 1 or lat == last_lat(msi):
             return
         rec["cog"] = float(rec.get("cog", 0) or 0)
-        rec["sog"] = float(rec.get("sof", 0) or 0)
+        rec["sog"] = float(rec.get("sog", 0) or 0)
         if not self.trk.sp(msi):
             return
         img_dir   = os.path.join(os.getcwd(), "data", "img")
