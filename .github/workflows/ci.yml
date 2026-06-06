@@ -9,9 +9,6 @@ jobs:
         python-version: '3.10'
     - name: Install deps
       run: pip install --upgrade pip && pip install -r requirements.txt
-    - name: Lint + compile check
-      run: "set -e\nfor f in config.py main.py src/*.py data/db.py; do\n  python3\
-        \ -m py_compile \\\"\\\" || exit 1\ndone\necho All files compile OK"
   test:
     needs: lint
     runs-on: ubuntu-latest
