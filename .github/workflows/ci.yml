@@ -23,10 +23,10 @@ jobs:
     - name: Run tests + coverage
       run: 'set -e
 
-        python3 -m pytest tests/ -v --cov=src --cov=data/db.py --cov-report=term-missing
+        python3 -m pytest tests/ -v --cov=src data/db.py --cov-report=term-missing
         > .coverage.txt'
     - if: always()
-      name: Show coverage
+      name: Show coverage report
       run: cat .coverage.txt
 name: CI
 'on':
