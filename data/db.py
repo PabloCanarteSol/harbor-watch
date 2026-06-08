@@ -8,7 +8,7 @@ def _conn() -> sqlite3.Connection:
         cnx = sqlite3.connect(DB_PATH)
         cnx.execute("PRAGMA journal_mode=WAL")
         CONN[DB_PATH] = cnx
-    return CONN[DB_PATH]
+        return CONN[DB_PATH]
 
 
 def init():
@@ -29,8 +29,7 @@ def init():
             source TEXT DEFAULT 'raw',
             inserted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
         CREATE INDEX IF NOT EXISTS idx_trk ON tracks(msi);
-    """)
-    c.close()
+      """)
 
 
 def insert(msi: str, name=None, lat=0.0, lon=0.0, ts=0):
@@ -39,8 +38,7 @@ def insert(msi: str, name=None, lat=0.0, lon=0.0, ts=0):
     c.execute("INSERT OR IGNORE INTO ships(msi,name) VALUES(?,?)", (msi, nm))
     c.execute(
         "INSERT INTO tracks(msi,name,lat,lon,msg_type,source) VALUES(?,?,?,?,?,?)",
-        [msi, nm, lat, lon, ts, "raw"],
-    )
+        [msi, nm, lat, lon, ts, "raw"])
 
 
 def get_recent(hours: int = 24, msi=None):
@@ -60,8 +58,7 @@ def get_last(msi: str):
     c = _conn().cursor()
     row = c.execute(
         "SELECT * FROM tracks WHERE msi=? ORDER BY inserted_at DESC LIMIT 1",
-        [msi],
-    ).fetchone()
+        [msi]).fetchone()
     cols = [d[0] for d in c.description]
     return dict(zip(cols, row)) if row else None
 
@@ -69,3 +66,31 @@ def get_last(msi: str):
 def last_lat(msi: str):
     r = get_last(msi)
     return r["lat"] if r else None
+
+
+# Compatibility so main.py import works
+init_db = init
+
+
+class AISDB:
+    """DB wrapper for main.py compatibility."""
+
+    @staticmethod
+    def init():
+        init()
+
+    @staticmethod
+    def insert(msi, name=None, lat=0.0, lon=0.0, ts=0):
+        insert(msi=msi, name=name, lat=lat, lon=lon, ts=ts)
+
+    @staticmethod
+    def get_recent(hours=24, msi=None):
+        return get_recent(hours=hours, msi=msi)
+
+    @staticmethod
+    def get_last(msi: str):
+        return get_last(msi)
+
+    @staticmethod
+    def last_lat(msi: str):
+        return last_lat(msi)
