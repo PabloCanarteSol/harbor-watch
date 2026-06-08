@@ -30,3 +30,9 @@ DOCK_STILL_SECONDS = 300        # Speed 0 for 5 min -> docked
 
 MAP_SIZE = (1600, 900)
 IMAGES_DIR = "/home/harbor-watch/templates/"
+
+# gr-air-modes config
+RX_FREQ = 162_000_000    # 162 MHz AIS frequency
+RUNE_PATH = "/usr/local/bin"
+RUNE_NAME = "air_modes"
+RECENT_HRS = 24           # Hours to cache recent positions
