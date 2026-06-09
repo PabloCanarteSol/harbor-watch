@@ -71,6 +71,9 @@ def last_lat(msi: str):
     return r["lat"] if r else None
 
 
+# Compatibility alias for main.py import
+init_db = init
+
 
 class AISDB:
     """Class wrapper for DB operations — matches main.py usage."""

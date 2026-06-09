@@ -138,6 +138,33 @@ def _wait_term(p: subprocess.Popen, t=20):
         p.kill()
 
 
+
+def parse_ts(ts_value) -> _dt | None:
+    """Parse timestamp from DB row."""
+    if ts_value is None:
+        return None
+    if isinstance(ts_value, (int, float)):
+        try:
+            return _dt.fromtimestamp(ts_value)
+        except (ValueError, OSError):
+            return None
+    if isinstance(ts_value, str):
+        try:
+            return _dt.fromisoformat(ts_value.replace("Z", "+00:00"))
+        except ValueError:
+            return None
+    return None
+
+def post_entry(tw, msi, name, info, fp):
+    """Compose and post a tweet for ship entry event."""
+    text = TwitterPoster.build_enter_text(
+        name=name,
+        imo=info.get("imo"),
+        flag=info.get("flag"),
+        length_m=info.get("length_m"),
+    )
+    result = tw.post_tweet(text, image_path=fp)
+    return result.get("success", False)
 class AISDaemon:
     """Main daemon loop."""
 
@@ -195,10 +222,10 @@ class AISDaemon:
         msg_ty = int(rec.get("msg_type", 0))
         dock   = is_in_docking_zone(lat, lon)
         AISDB.insert(msi=msi, name=rec.get("name", "?"), lat=lat, lon=lon, ts=ts)
-        if msg_ty != 1 or lat == last_lat(msi):
+        if msg_ty != 1 and lat == last_lat(msi):
             return
         rec["cog"] = float(rec.get("cog", 0) or 0)
-        rec["sog"] = float(rec.get("sof", 0) or 0)
+        rec["sog"] = float(rec.get("sog", 0) or 0)
         if not self.trk.sp(msi):
             return
         img_dir   = os.path.join(os.getcwd(), "data", "img")
@@ -208,7 +235,7 @@ class AISDaemon:
             lat=lat,
             lon=lon,
             cog=float(rec.get("cog", 0) or 0),
-            sog=float(rec.get("sof", 0) or 0),
+            sog=float(rec.get("sog", 0) or 0),
         )
         info     = lookup_vessel(msi)
         tw       = get_tw()
