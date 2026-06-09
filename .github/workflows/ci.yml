@@ -10,18 +10,35 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
+       - uses: actions/checkout@v3
+       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-      - name: Install deps
+       - name: Install deps
         run: pip install --upgrade pip && pip install -r requirements.txt || true
-      - name: Lint + compile check
+       - name: Lint + compile check
         run: |
            set -e
            echo "Checking Python syntax..."
-           for f in config.py main.py src/*.py data/db py; do
+           for f in config.py main.py src/*.py data/db.py; do
               python3 -m py_compile "$f" || exit 1
             done
-            echo "All files compile OK
+            echo "All files compile OK"
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+       - uses: actions/checkout@v3
+       - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+       - name: Install deps
+        run: pip install --upgrade pip && pip install -r requirements.txt || true
+       - name: Run test suite with coverage
+        run: |
+           set -e
+           python3 -m pytest tests/ -v --cov=src --cov=config.py --cov-fail-under=60
+           echo "All tests passed with adequate coverage"
