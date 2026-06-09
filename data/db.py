@@ -69,3 +69,31 @@ def get_last(msi: str):
 def last_lat(msi: str):
     r = get_last(msi)
     return r["lat"] if r else None
+
+
+# Compatibility alias for main.py import
+init_db = init
+
+
+class AISDB:
+    """Class wrapper for DB operations — matches main.py usage."""
+
+    @staticmethod
+    def init():
+        init()
+
+    @staticmethod
+    def insert(msi, name=None, lat=0.0, lon=0.0, ts=0):
+        insert(msi=msi, name=name, lat=lat, lon=lon, ts=ts)
+
+    @staticmethod
+    def get_recent(hours=24, msi=None):
+        return get_recent(hours=hours, msi=msi)
+
+    @staticmethod
+    def get_last(msi: str):
+        return get_last(msi)
+
+    @staticmethod
+    def last_lat(msi: str):
+        return last_lat(msi)

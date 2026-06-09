@@ -56,7 +56,7 @@ def generate_map(route_points=None, ship_pos=None, name="Unknown",
     # Ship current position (red dot)
     if ship_pos:
         sp = _scale_points([ship_pos], MAP_W, MAP_H)
-        sx, sy = sp[0]
+        sx, sy = pts[0] if (pts := _scale_points([ship_pos], MAP_W, MAP_H)) else None
         draw.ellipse([sx-16, sy-16, sx+16, sy+16],
                      fill=(220, 55, 50), outline=(240, 170, 170), width=3)
 
